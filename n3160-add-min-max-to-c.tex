@@ -1,0 +1,90 @@
+\documentclass[a4paper,10pt]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+%opening
+\title{N3160: Add min, max for integers to C}
+\author{Christoph Grüninger\footnote{Unaffiliated, foss@grueninger.de}}
+\date{2023-08-06}
+
+\begin{document}
+
+\lstset{language=C,basicstyle=\ttfamily}
+
+\maketitle
+
+\noindent
+Document: N3160\\
+Audience: WG14\\
+Proposal category: New feature\\
+Document hosted at \url{https://github.com/gruenich/n3160-add-min-max-to-c}
+
+\section{Summary of proposed changes}
+
+Add the functions \lstinline{min} and \lstinline{max} for integers to the C programming language.
+
+\section{Rationale}
+
+For floats and doubles, \lstinline{fmin} and \lstinline{fmax} exists, but not for integer types. Other
+programming languages provide them including C++ by \lstinline{std::min} and \lstinline{std::max}. Several
+C libraries provide them as macros, too, e.g., GNU C library \cite{GLibc}, Linux \cite{Linux},
+SuperLU \cite{SuperLU}, Cairo \cite{Cairo}.
+Stack Overflow has a question where to find C's \lstinline{min}/\lstinline{max} function with more
+then 400 upvotes \cite{Stackoverflow}, indicating that many C programmers expect this function to be
+part of the C language.
+
+Some may argue these two functions are trivial to implement. C provides other functions that would be trivial to implement like \lstinline{abs} and \lstinline{fabs}. On the other hand, N1292 \cite{N1292} discusses adding niche functions like Legendre polynomials, irregular modified cylindrical Bessel functions, and Gauß' beta function.
+
+\section{Proposal}
+Add the $\operatorname{min}$ and $\operatorname{max}$ functions for integers to \lstinline{stdlib.h}.
+
+The formal definitions of the two functions are
+\begin{equation*}
+ \operatorname{min}(a, b) := \begin{cases}b & a > b\\ a & \text{else}\end{cases}
+\end{equation*}
+and
+\begin{equation*}
+ \operatorname{max}(a, b) := \begin{cases}b & b > a\\ a & \text{else}\end{cases}.
+\end{equation*}
+The following functions should be added to \lstinline{stdlib.h} implementing above definition:
+\begin{lstlisting}
+ int min (int a, int b);
+ int max (int a, int b);
+ long int lmin (long int a, long int b);
+ long int lmax (long int a, long int b);
+ long long int llmin (long long int a, long long int b);
+ long long int llmax (long long int a, long long int b);
+\end{lstlisting}
+
+
+\section{Proposed wording}
+There is no proposed wording yet. Once this idea gains some support in WG14, we will add a concrete proposal.
+
+\section{Looking for help}
+If someone is interested to chip in with experience, WG14 seniority, or as a champion to present the proposal in a committee meeting, we welcome additional authors to this proposal.
+
+\begin{thebibliography}{9}
+\bibitem{GLibc}
+GNU C Library source code containing macros for MIN and MAX, \url{https://sourceware.org/git/?p=glibc.git;a=blob;f=misc/sys/param.h;hb=HEAD}.
+
+\bibitem{Linux}
+Linux source code containing macros for MIN and MAX, \url{https://github.com/torvalds/linux/blob/master/include/linux/minmax.h}.
+
+\bibitem{SuperLU}
+SuperLU source code containing macros for MIN and MAX,\\ \url{https://github.com/xiaoyeli/superlu/blob/master/SRC/slu_util.h}.
+
+\bibitem{Cairo}
+Cairo source code containing macros for MIN and MAX,\\ \url{https://cgit.freedesktop.org/cairo/tree/perf/cairo-perf.h}.
+
+\bibitem{Stackoverflow}
+Stackoverflow question \emph{MIN and MAX in C},\\ \url{https://stackoverflow.com/questions/3437404/min-and-max-in-c}.
+
+\bibitem{N1292}
+ISO/IEC JTC 1/SC 22/WG14 N1292 \emph{Extensions to the C Library, to Support Mathematical Special Functions}, 2008.
+\end{thebibliography}
+
+\end{document}
