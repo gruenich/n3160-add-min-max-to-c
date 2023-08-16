@@ -63,12 +63,28 @@ The following functions should be added to \lstinline{stdlib.h} implementing abo
  long long int llmax (long long int a, long long int b);
 \end{lstlisting}
 
+As a consequence, the function-like macros \lstinline{min} and \lstinline{max} can be implemented.
+% clause 7.1.4 in N3096
+
+\section{Impact}
+The introduction of the functions will conflict with existing code already using the names.
+In most cases functions with the same name probably do exactly the same as described in this proposal.
+
+Other uses of the names are imaginable like returning the smallest or biggest element from a set or vector.
+This would lead to name clashes and compile errors.
+
+Using a library version-test macro can help with backwards compatible code. We do not see the need of
+a dedicated test macro \lstinline{__has_c_min_max} .
 
 \section{Proposed wording}
 There is no proposed wording yet. Once this idea gains some support in WG14, we will add a concrete proposal.
 
 \section{Looking for help}
 If someone is interested to chip in with experience, WG14 seniority, or as a champion to present the proposal in a committee meeting, we welcome additional authors to this proposal.
+
+
+\section{Acknowledgements}
+We would like to thank Martin Uecker for encouragement and feedback on the first draft.
 
 \begin{thebibliography}{9}
 \bibitem{GLibc}
