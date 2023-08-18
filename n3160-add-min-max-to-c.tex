@@ -3,6 +3,7 @@
 \documentclass[a4paper,10pt]{scrartcl}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
+\usepackage[]{mdframed}
 \usepackage{listings}
 \usepackage{url}
 \usepackage{xcolor}
@@ -77,11 +78,33 @@ Using a library version-test macro can help with backwards compatible code. We d
 a dedicated test macro \lstinline{__has_c_min_max} .
 
 \section{Proposed wording}
-There is no proposed wording yet. Once this idea gains some support in WG14, we will add a concrete proposal.
+
+We propose to add a new sub-section 7.24.6.2:
+
+\begin{mdframed}
+    \subsection*{7.24.6.2 The \lstinline{min}, \lstinline{lmin}, \lstinline{llmin}, \lstinline{max}, and \lstinline{lmax}, \lstinline{llmax} functions}
+    \subsubsection*{Synopsis}
+    \begin{lstlisting}
+#include <stdlib.h>;
+int min (int a, int b);
+int max (int a, int b);
+long int lmin (long int a, long int b);
+long int lmax (long int a, long int b);
+long long int llmin (long long int a, long long int b);
+long long int llmax (long long int a, long long int b);
+    \end{lstlisting}
+    \subsubsection*{Description}
+    The \lstinline{min}, \lstinline{lmin}, and \lstinline{llmin} functions compute the smaller value of the two
+    integers \lstinline{a} and \lstinline{b}.
+    The \lstinline{max}, \lstinline{lmax}, and \lstinline{llmax} functions compute the bigger value of the two
+    integers \lstinline{a} and \lstinline{b}.
+    \subsubsection*{Returns}
+    The \lstinline{min}, \lstinline{lmin}, and \lstinline{llmin} functions return the smaller value.
+    The \lstinline{max}, \lstinline{lmax}, and \lstinline{llmax} functions return the bigger value.
+\end{mdframed}
 
 \section{Looking for help}
 If someone is interested to chip in with experience, WG14 seniority, or as a champion to present the proposal in a committee meeting, we welcome additional authors to this proposal.
-
 
 \section{Acknowledgements}
 We would like to thank Martin Uecker for encouragement and feedback on the first draft.
