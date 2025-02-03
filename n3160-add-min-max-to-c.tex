@@ -2,6 +2,7 @@
 
 \documentclass[a4paper,10pt]{scrartcl}
 \usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
 \usepackage{amsmath}
 \usepackage[]{mdframed}
 \usepackage{listings}
@@ -9,10 +10,12 @@
 \usepackage{xcolor}
 \usepackage{hyperref}
 
+\KOMAoptions{headings=small}
+
 %opening
 \title{N3160: Add min, max for integers to C}
 \author{Christoph Grüninger\footnote{Unaffiliated, foss@grueninger.de}}
-\date{2023-08-19}
+\date{2025-02-03}
 
 \begin{document}
 
@@ -32,11 +35,11 @@ Add the functions \lstinline{min} and \lstinline{max} for integers to the C prog
 
 \section{Rationale}
 
-For floats and doubles, \lstinline{fmin} and \lstinline{fmax} exists, but not for integer types. Other
+For floats and doubles, \lstinline{fmin} and \lstinline{fmax} exist -- but not for integer types. Other
 programming languages provide them including C++ by \lstinline{std::min} and \lstinline{std::max}. Several
 C libraries provide them as macros, too, e.g., GNU C library \cite{GLibc}, Linux \cite{Linux},
-SuperLU \cite{SuperLU}, Cairo \cite{Cairo}.
-Stack Overflow has a question where to find C's \lstinline{min}/\lstinline{max} function with more
+SuperLU \cite{SuperLU}, and Cairo \cite{Cairo}.
+Stack Overflow has a question where to find C's \lstinline{min} / \lstinline{max} functions with more
 than 400 up-votes \cite{Stackoverflow}, indicating that many C programmers expect this function to be
 part of the C language.
 
@@ -44,7 +47,7 @@ Some may argue these two functions are trivial to implement. C provides other fu
 trivial to implement like \lstinline{abs} and \lstinline{fabs}.
 
 \section{Proposal}
-Add the $\operatorname{min}$ and $\operatorname{max}$ functions for integers to \lstinline{stdlib.h}.
+Add the $\operatorname{min}$ and $\operatorname{max}$ macros for integers to \lstinline{stdlib.h}.
 
 The formal definitions of the two functions are
 \begin{equation*}
@@ -54,7 +57,26 @@ and
 \begin{equation*}
  \operatorname{max}(a, b) := \begin{cases}b & b > a\\ a & \text{else}\end{cases}.
 \end{equation*}
-The following functions should be added to \lstinline{stdlib.h} implementing above definition:
+
+The macros should be added to \lstinline{stdlib.h} implementing above definition.
+
+\section{Discussion}
+We are not sure what approach to follow. We see three alternatives:
+
+\begin{enumerate}
+ \item[A.] Introduces macros \lstinline{min} / \lstinline{max} with their obvious names. The
+ libraries cited in the introduction proof these macro as helpful. It might cause major
+ disruptions as libraries are actively use these names.
+ \item[B.] Introduce macros \lstinline{stdc_min} / \lstinline{stdc_max} using the prefix \lstinline{stdc_} to
+ avoid name clashes with existing code. This is inconsistent with \lstinline{fmin} / \lstinline{fmax}.
+ \item[C.] Stay with the status quo and do not introduce any macro to calculate minimum and maximum for
+ integers. The disadvantages are too severe compared to the limited benefit.
+\end{enumerate}
+
+There is a bonus discussion to have functions similar to what C already provides for floats and doubles:
+
+\begin{enumerate}
+ \item[BONUS.] Should we provide the following functions?
 \begin{lstlisting}
  int min (int a, int b);
  int max (int a, int b);
@@ -63,51 +85,25 @@ The following functions should be added to \lstinline{stdlib.h} implementing abo
  long long int llmin (long long int a, long long int b);
  long long int llmax (long long int a, long long int b);
 \end{lstlisting}
+Depending on the discussion of A. and B. they might also use the prefix \lstinline{stdc_}.
+\end{enumerate}
 
 As a consequence, the function-like macros \lstinline{min} and \lstinline{max} can be implemented.
 % clause 7.1.4 in N3096
 
 \section{Impact}
-The introduction of the functions will conflict with existing code already using the names.
-In most cases functions with the same name probably do exactly the same as described in this proposal.
-
-Other uses of the names are imaginable like returning the smallest or biggest element from a set or vector.
-This would lead to name clashes and compile errors.
-
-Using a library version-test macro can help with backwards compatible code. We do not see the need of
-a dedicated test macro \lstinline{__has_c_min_max} .
-
-\section{Proposed wording}
-
-We propose to add a new sub-section 7.24.6.2:
-
-\begin{mdframed}
-    \subsection*{7.24.6.2 The \lstinline{min}, \lstinline{lmin}, \lstinline{llmin}, \lstinline{max}, and \lstinline{lmax}, \lstinline{llmax} functions}
-    \subsubsection*{Synopsis}
-    \begin{lstlisting}
-#include <stdlib.h>;
-int min (int a, int b);
-int max (int a, int b);
-long int lmin (long int a, long int b);
-long int lmax (long int a, long int b);
-long long int llmin (long long int a, long long int b);
-long long int llmax (long long int a, long long int b);
-    \end{lstlisting}
-    \subsubsection*{Description}
-    The \lstinline{min}, \lstinline{lmin}, and \lstinline{llmin} functions compute the smaller value of the two
-    integers \lstinline{a} and \lstinline{b}.
-    The \lstinline{max}, \lstinline{lmax}, and \lstinline{llmax} functions compute the bigger value of the two
-    integers \lstinline{a} and \lstinline{b}.
-    \subsubsection*{Returns}
-    The \lstinline{min}, \lstinline{lmin}, and \lstinline{llmin} functions return the smaller value.
-    The \lstinline{max}, \lstinline{lmax}, and \lstinline{llmax} functions return the bigger value.
-\end{mdframed}
+Using a library version-test macro like a dedicated test macro \lstinline{__has_c_min_max} can
+help with the transition to keep code compatible to C implementations providing the macros and
+those not providing them.
 
 \section{Looking for help}
 If someone is interested to chip in with experience, WG14 seniority, or as a champion to present the proposal in a committee meeting, we welcome additional authors to this proposal.
 
 \section{Acknowledgments}
-We would like to thank Martin Uecker for encouragement and feedback on the first draft.
+We would like to thank JeanHeyd Meneide for helpful discussions and stimuli.
+Martin Uecker gave encourigin feedback on the first draft.
+Thanks to ISO C++ Standards Committee Panel Discussion on CppCon 2024 for their request to formulate
+issues as proposals to the committee, it made me pick up this topic after some time of inactivity.
 
 \begin{thebibliography}{9}
 \bibitem{GLibc}
